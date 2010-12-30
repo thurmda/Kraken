@@ -8,7 +8,7 @@ if (top != self)
 	
 (function(){
 /*
-STATICLY LINKING libs inside this closure 
+STATICLY LINKING libs inside this closure because Chrome is not honoring @require :( 
 */
 /*
  * 
@@ -62,19 +62,18 @@ var viewport = {width:$w.width() , height:$w.height()};
 
 // INSERT ASSETS
 $('<style type="text/css" id="KrakenCSS">'
-	+'#K {background:trasparent;bottom:0;height:20px;left:0px;opacity:0.8;position:fixed;width:100%;display:none}'
-	+'#KQ {background: #fff;border: none;bottom: 2px;height: 14px;left: 2px;padding: 0px 4px;position: fixed;width: 28%;}'	
+	+'#K {background:trasparent;bottom:0;display:none;height:20px;left:0px;opacity:0.8;position:fixed;width:100%;}'
+	+'#KQ {background:#fff;border:none;bottom:2px;height:14px;left:2px;padding:0px 4px;position:fixed;width: 28%;}'	
 	+'#K svg {bottom:0px;left:0px;pointer-events:none;position:absolute;}'
-	+'#K svg ellipse {pointer-events: all}'
+	+'#K svg ellipse {pointer-events: all;}'
 	+'</style>').appendTo("head");
-$("<div id='K'/>").appendTo("body");
-$("<input id='KQ'/>").appendTo("#K");
+$("<div id='K'><input id='KQ'/></div>").appendTo("body");
+//SVG awesomeness! 
 var r = Raphael("K", viewport.width, viewport.height);
 	r.customAttributes.a1 = function (num) {return {a1: num};};
 	r.customAttributes.a2 = function (num) {return {a2: num};};
 	r.customAttributes.rot = function (num) {return {rot: num};};
-	//SVG 
-	var arm = r.path().attr({fill: "75-#f33-#966:80-#b99", stroke: "#f33", "stroke-width": 2});
+	var arm = r.path().attr({fill: "75-#f33-#c88:80-#b99", stroke: "#f33", "stroke-width": 2});
 	var tip = r.ellipse(18, viewport.height - 18, 3, 4).attr({stroke: "#f33","stroke-width": 2, fill: "#f44"}).onAnimation(function () {
 	 	var c2y = viewport.height - ((viewport.height - this.attr("cy")) * .6); 
 	 	var c10y = viewport.height - 20; 
@@ -93,9 +92,6 @@ var r = Raphael("K", viewport.width, viewport.height);
 	 	arm.attr(curve).toBack()
 	});
 
-
-
-
 //METHODS
 var toggleKraken = function(ev){
 	(active ^= true) ? scene() : dock();
@@ -113,10 +109,10 @@ var retire = function(){
 var dock = function(){
 	//unsafeWindow.console.log("docking");
 	elidx = 0;
-	var ats = {cx:viewport.width *.46 , 
-			   cy:viewport.height - 2 ,
-			   a1:viewport.width *.46 ,
-			   a2:viewport.width *.46 ,
+	var ats = {cx:viewport.width *.4 , 
+			   cy:viewport.height - 8 ,
+			   a1:viewport.width *.4 ,
+			   a2:viewport.width *.4 ,
 			   easing:"<>"};
 	//unsafeWindow.console.dir(ats);
 	tip.stop().animate({"80%" : ats}, 800);
@@ -125,18 +121,17 @@ var dock = function(){
 var slither = function(){
 	if(active)
 		return;
-	var ats = {
-		cx: (viewport.width * .4) + Math.random() * (viewport.width * .58),
-		cy: (viewport.height * .8) + Math.random() * (viewport.height * .18),
-		a1: (viewport.width * .3) + Math.random() * (viewport.width * .2),
-		a2: (viewport.width * .6) + Math.random() * (viewport.width * .3),
-		rx: 4,
-		ry: 4,
-		ease: "bounce"
-		};
+	var ats = {	cx: (viewport.width * .5) + Math.random() * (viewport.width * .2),
+				cy: (viewport.height * .8) + Math.random() * (viewport.height * .10),
+				a1: (viewport.width * .3) + Math.random() * (viewport.width * .1),
+				a2: (viewport.width * .9) + Math.random() * (viewport.width * .1),
+				rx: 4,
+				ry: 4,
+				ease: "<>",
+				callback: slither
+				};
 	//unsafeWindow.console.dir(ats);
-	tip.stop().animate({"98%" : ats}, 400);
-	setTimeout(slither, 420);
+	tip.stop().animate({"100%" : ats}, 400);
 }
 var scene=function(){
 	if (!active)
@@ -203,16 +198,11 @@ return _el;
 $w.resize(function(event) {
 	viewport = {height: $w.height(), width: $w.width()};
 	r.setSize(viewport.width, viewport.height);
-	dock();
 });
 $w.keypress(function(event) {
 	//?! Chrome [cntrl]+[shift]+Z = 26 , FF [cntrl]+[shift]+Z = 90
 	if(event.shiftKey && event.ctrlKey && (event.which == '26' || event.which == '90')){
-		if( !$('#K').is(':visible') ) {
-			summon();
-		}else{
-			retire();
-		}
+		$('#K').is(':visible') ? dock() : summon();
 	}
 });
 $("#KQ").keypress(function(event) {
