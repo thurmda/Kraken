@@ -62,7 +62,7 @@ var viewport = {width:$w.width() , height:$w.height()};
 
 // INSERT ASSETS
 $('<style type="text/css" id="KrakenCSS">'
-	+'#K {background:trasparent;bottom:0;height:20px;left:0px;opacity:0.1;position:fixed;width:100%;display:none}'
+	+'#K {background:trasparent;bottom:0;height:20px;left:0px;opacity:0.8;position:fixed;width:100%;display:none}'
 	+'#KQ {background: #fff;border: none;bottom: 2px;height: 14px;left: 2px;padding: 0px 4px;position: fixed;width: 28%;}'	
 	+'#K svg {bottom:0px;left:0px;pointer-events:none;position:absolute;}'
 	+'#K svg ellipse {pointer-events: all}'
