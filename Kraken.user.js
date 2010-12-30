@@ -1,7 +1,5 @@
 // ==UserScript==
 // @name          The Kraken
-// @namespace     http://www.danielthurman.com/
-// @description   Fun with Raphaël
 // ==/UserScript==
 
 //only run on top (no iframes, etc.)
@@ -10,7 +8,7 @@ if (top != self)
 	
 (function(){
 /*
-STATICLY LINKING jQuery and Raphaël inside this closure 
+STATICLY LINKING libs inside this closure 
 */
 /*
  * 
@@ -102,11 +100,11 @@ $(unsafeWindow).keypress(function(event) {
 });
 var summon = function(){
 	$("#K").fadeIn(600);
-	$("#KQ").focus();
+	$("#KQ").select();
 }
 var retire = function(){
 	$("#K").fadeOut(600);
-	$(window).focus();
+	$("#KQ").blur();
 }
 
 
