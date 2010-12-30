@@ -50,55 +50,59 @@ var j$ = jQuery.noConflict();
  * 
  */
 var $ = jQuery;
+var $w = $(window);
+var els = [];
+var elidx = 0;
+var el = els[elidx];
+var active = false;
+var waiting = false;
+var easing = ["",">","<","<>","backIn","backOut"];
+var viewport = {width:$w.width() , height:$w.height()};
 
-$('<style type="text/css" id="Kraken">'
-	+'#K {background:trasparent;bottom:0;height:20px;left:0px;opacity:0.8;position:fixed;width:100%;}'
+
+// INSERT ASSETS
+$('<style type="text/css" id="KrakenCSS">'
+	+'#K {background:trasparent;bottom:0;height:20px;left:0px;opacity:0.1;position:fixed;width:100%;display:none}'
 	+'#KQ {background: #fff;border: none;bottom: 2px;height: 14px;left: 2px;padding: 0px 4px;position: fixed;width: 28%;}'	
 	+'#K svg {bottom:0px;left:0px;pointer-events:none;position:absolute;}'
 	+'#K svg ellipse {pointer-events: all}'
 	+'</style>').appendTo("head");
-var $w = $(window);
-var els = $("h1, h2, h3");
-var elidx = 0;
-var el = els[elidx];
-var active = false;
-viewport = {height: $(window).height(), width: $(window).width()};
-var query = "Kraken";
-
-var toggleKraken = function(ev){
-	active = !active;
-	if(active){
-		scene();
-	}else{
-		elidx = 0;
-		dock();
-	}
-};
-
-
 $("<div id='K'/>").appendTo("body");
+$("<input id='KQ'/>").appendTo("#K");
 var r = Raphael("K", viewport.width, viewport.height);
-r.customAttributes.a1 = function (num) {
-    return {a1: num};
-};
-r.customAttributes.a2 = function (num) {
-    return {a2: num};
-};
-r.customAttributes.rot = function (num) {
-    return {rot: num};
-};
+	r.customAttributes.a1 = function (num) {return {a1: num};};
+	r.customAttributes.a2 = function (num) {return {a2: num};};
+	r.customAttributes.rot = function (num) {return {rot: num};};
+	//SVG 
+	var arm = r.path().attr({fill: "75-#f33-#966:80-#b99", stroke: "#f33", "stroke-width": 2});
+	var tip = r.ellipse(18, viewport.height - 18, 3, 4).attr({stroke: "#f33","stroke-width": 2, fill: "#f44"}).onAnimation(function () {
+	 	var c2y = viewport.height - ((viewport.height - this.attr("cy")) * .6); 
+	 	var c10y = viewport.height - 20; 
+	 	var curve ={path:  
+			"M"+ 0 +","+ c10y  +
+			"L" +(viewport.width/3 )+","+ c10y  +
+			"C" + (this.attr("a2") - 12)  + "," + (c10y + 4) + " " +
+				  (this.attr("a1") - 2)  + "," + c2y + " " +
+				  this.attr("cx") + "," + this.attr("cy") +
+			"L" + this.attr("cx") + "," + this.attr("cy") +
+			"C" + (this.attr("a1") + 2)  + "," + c2y + " " +
+				  (this.attr("a2") + 12)  + "," + c10y  + " " +
+				  (viewport.width/3 )+","+ viewport.height +
+			"L" + 0 +","+ viewport.height 
+			};	 	
+	 	arm.attr(curve).toBack()
+	});
 
-$(unsafeWindow).keypress(function(event) {
-	unsafeWindow.console.log("here");
-	if(event.shiftKey && event.ctrlKey && (event.charCode == '26')){
-		if( !$('#K').is(':visible') ) {
-			summon();
-		}else{
-			retire();
-		}
-	}
-});
+
+
+
+//METHODS
+var toggleKraken = function(ev){
+	(active ^= true) ? scene() : dock();
+};
 var summon = function(){
+//	waiting = true;
+	slither();
 	$("#K").fadeIn(600);
 	$("#KQ").select();
 }
@@ -106,52 +110,34 @@ var retire = function(){
 	$("#K").fadeOut(600);
 	$("#KQ").blur();
 }
-
-
-$(window).resize(function() {
-	viewport = {height: $(window).height(), width: $(window).width()};
-	r.setSize(viewport.width, viewport.height);
-	dock();
-});
-$("<input id='KQ'/>").appendTo("#K");
-$("#KQ").keypress(function(event) {
-	  event.stopImmediatePropagation();
-		  if (event.which == '13') {
-			event.preventDefault();
-			query = $("#KQ").val();
-			els = $(query);
-//			unsafeWindow.console.dir(els);
-			toggleKraken();
-		  }
-});
-
-
-var over = r.path().attr({fill: "75-#f33-#966:80-#b99", stroke: "#f33", "stroke-width": 2});
-var c = r.ellipse(18, viewport.height - 18, 3, 4).attr({stroke: "#f33","stroke-width": 2, fill: "#f44"}).onAnimation(function () {
- 	var c1y = viewport.height - ((viewport.height - this.attr("cy")) * .2); 
- 	var c2y = viewport.height - ((viewport.height - this.attr("cy")) * .6); 
- 	var c10y = viewport.height - 20; 
- 	var curve ={path:  
-		"M"+ 0 +","+ c10y  +
-		"L" +(viewport.width/3 )+","+ c10y  +
-		"C" + (this.attr("a2") - 12)  + "," + (c10y + 4) + " " +
-			  (this.attr("a1") - 2)  + "," + c2y + " " +
-			  this.attr("cx") + "," + this.attr("cy") +
-		"L" + this.attr("cx") + "," + this.attr("cy") +
-		"C" + (this.attr("a1") + 2)  + "," + c2y + " " +
-			  (this.attr("a2") + 12)  + "," + c10y  + " " +
-			  (viewport.width/3 )+","+ viewport.height +
-		"L" + 0 +","+ viewport.height 
-		};	 	
- 	over.attr(curve).toBack()
-});
-c.click(toggleKraken);
-var easing = ["", 
-              ">", 
-              "<", 
-              "<>", 
-              "backIn", 
-              "backOut"];
+var dock = function(){
+	//unsafeWindow.console.log("docking");
+	elidx = 0;
+	var ats = {cx:viewport.width *.46 , 
+			   cy:viewport.height - 2 ,
+			   a1:viewport.width *.46 ,
+			   a2:viewport.width *.46 ,
+			   easing:"<>"};
+	//unsafeWindow.console.dir(ats);
+	tip.stop().animate({"80%" : ats}, 800);
+	retire();
+};
+var slither = function(){
+	if(active)
+		return;
+	var ats = {
+		cx: (viewport.width * .4) + Math.random() * (viewport.width * .58),
+		cy: (viewport.height * .8) + Math.random() * (viewport.height * .18),
+		a1: (viewport.width * .3) + Math.random() * (viewport.width * .2),
+		a2: (viewport.width * .6) + Math.random() * (viewport.width * .3),
+		rx: 4,
+		ry: 4,
+		ease: "bounce"
+		};
+	//unsafeWindow.console.dir(ats);
+	tip.stop().animate({"98%" : ats}, 400);
+	setTimeout(slither, 420);
+}
 var scene=function(){
 	if (!active)
 			return;
@@ -168,26 +154,25 @@ var scene=function(){
 		toggleKraken();
 		return;
 	}
-	unsafeWindow.console.log(el);
+	//unsafeWindow.console.log(el);
 	var cx = $(el).offset().left + $(el).width()/2;
 	var cy = $(el).offset().top - $w.scrollTop() + $(el).height()/2;
-	unsafeWindow.console.log({offset:$(el).offset(), cx:cx, cy:cy});
+	//unsafeWindow.console.log({offset:$(el).offset(), cx:cx, cy:cy});
 	var was = $(el).css("background");
 	var ats = {cx:cx, cy:cy, a1:a1, a2:a2, easing:ease, rx:rx, ry:ry,
 			callback: function (){
 				$(el).css({background:"#faa"});
 		}};
-	unsafeWindow.console.log(ats);
+	//unsafeWindow.console.log(ats);
 	if(ats.cx && ats.cy)
-		c.stop().animate({
+		tip.stop().animate({
 			"80%" : ats,
 			"90%" : {fill: "#fbb"},
 			"100%" : {fill: "#f44",callback: function (){$(el).css({background:was});}}		
-		}, 800);
-	setTimeout(scene, 900);
+		}, 400);
+	setTimeout(scene, 450);
 	
 }
-
 var newTarget = function(){
 	var limit = 0;
 	var _el = null;
@@ -198,32 +183,48 @@ var newTarget = function(){
 	{
 		if(elidx >= els.length)
 		{
-			unsafeWindow.console.log("wrap around");
+			//unsafeWindow.console.log("wrap around");
 			return null;
 		}
 		_el = els[elidx];
 		offset = $(_el).offset();
 		limit++;
 		if(limit > 1000){
-			unsafeWindow.console.log("limit");
+			//unsafeWindow.console.log("limit");
 			return null;
 		}
 	elidx++;
 	}
-//	unsafeWindow.console.log(_el);
+	//unsafeWindow.console.log(_el);
 return _el;	
 }
 
-var dock = function(){
-	unsafeWindow.console.log("docking");
-	var ats = {cx:viewport.width *.46 , 
-			   cy:viewport.height - 2 ,
-			   a1:viewport.width *.46 ,
-			   a2:viewport.width *.46 ,
-			   easing:"<>"};
-//	unsafeWindow.console.dir(ats);
-	c.stop().animate({"80%" : ats}, 800);
-	retire();
-}
+//EVENT BINDING
+$w.resize(function(event) {
+	viewport = {height: $w.height(), width: $w.width()};
+	r.setSize(viewport.width, viewport.height);
+	dock();
+});
+$w.keypress(function(event) {
+	//?! Chrome [cntrl]+[shift]+Z = 26 , FF [cntrl]+[shift]+Z = 90
+	if(event.shiftKey && event.ctrlKey && (event.which == '26' || event.which == '90')){
+		if( !$('#K').is(':visible') ) {
+			summon();
+		}else{
+			retire();
+		}
+	}
+});
+$("#KQ").keypress(function(event) {
+	event.stopImmediatePropagation();
+	if (event.which == '13') {
+		event.preventDefault();
+		var query = $("#KQ").val();
+		els = $(query);
+		//unsafeWindow.console.dir(els);
+		toggleKraken();
+	}
+});
+
 dock();
 })();
