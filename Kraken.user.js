@@ -55,7 +55,6 @@ var els = [];
 var elidx = 0;
 var el = els[elidx];
 var active = false;
-var waiting = false;
 var easing = ["",">","<","<>","backIn","backOut"];
 var viewport = {width:$w.width() , height:$w.height()};
 
@@ -72,7 +71,6 @@ $("<div id='K'><input id='KQ'/></div>").appendTo("body");
 var r = Raphael("K", viewport.width, viewport.height);
 	r.customAttributes.a1 = function (num) {return {a1: num};};
 	r.customAttributes.a2 = function (num) {return {a2: num};};
-	r.customAttributes.rot = function (num) {return {rot: num};};
 	var arm = r.path().attr({fill: "75-#f33-#c88:80-#b99", stroke: "#f33", "stroke-width": 2});
 	var tip = r.ellipse(18, viewport.height - 18, 3, 4).attr({stroke: "#f33","stroke-width": 2, fill: "#f44"}).onAnimation(function () {
 	 	var c2y = viewport.height - ((viewport.height - this.attr("cy")) * .6); 
@@ -97,26 +95,26 @@ var toggleKraken = function(ev){
 	(active ^= true) ? scene() : dock();
 };
 var summon = function(){
-//	waiting = true;
 	slither();
 	$("#K").fadeIn(600);
 	$("#KQ").select();
 }
 var retire = function(){
-	$("#K").fadeOut(600);
+	$("#K").fadeOut(200);
 	$("#KQ").blur();
 }
 var dock = function(){
 	//unsafeWindow.console.log("docking");
 	elidx = 0;
-	var ats = {cx:viewport.width *.4 , 
-			   cy:viewport.height - 8 ,
-			   a1:viewport.width *.4 ,
-			   a2:viewport.width *.4 ,
-			   easing:"<>"};
+	var ats = {cx:viewport.width * .7 , 
+			   cy:viewport.height * .85 ,
+			   a1:viewport.width * .4 ,
+			   a2:viewport.width * .9 ,
+			   easing:"<>",
+			   callback: retire
+			   };
 	//unsafeWindow.console.dir(ats);
-	tip.stop().animate({"80%" : ats}, 800);
-	retire();
+	tip.stop().animate({"90%" : ats}, 400);
 };
 var slither = function(){
 	if(active)
@@ -133,6 +131,14 @@ var slither = function(){
 	//unsafeWindow.console.dir(ats);
 	tip.stop().animate({"100%" : ats}, 400);
 }
+var stingEl = function(){
+	var $el = $(el);
+	var was = $el.css("background");
+	$el.css({background:"#faa", opacity: .3})
+		.animate({opacity:1}, 600, function(){ //heal
+			$el.css({background:was});
+	});
+}
 var scene=function(){
 	if (!active)
 			return;
@@ -141,8 +147,6 @@ var scene=function(){
 	var ease = easing[Math.floor(Math.random() *easing.length)];
 	var rx = 3 + (Math.random() * 2);
 	var ry = 3 + (Math.random() * 2);
-	var rot = 10 -  (Math.random() * 20) % 1;
-	
 
 	el = newTarget();
 	if(!el){
@@ -153,17 +157,14 @@ var scene=function(){
 	var cx = $(el).offset().left + $(el).width()/2;
 	var cy = $(el).offset().top - $w.scrollTop() + $(el).height()/2;
 	//unsafeWindow.console.log({offset:$(el).offset(), cx:cx, cy:cy});
-	var was = $(el).css("background");
-	var ats = {cx:cx, cy:cy, a1:a1, a2:a2, easing:ease, rx:rx, ry:ry,
-			callback: function (){
-				$(el).css({background:"#faa"});
-		}};
+//	var was = $(el).css("background");
+	var ats = {cx:cx, cy:cy, a1:a1, a2:a2, easing:ease, rx:rx, ry:ry,callback: stingEl};
 	//unsafeWindow.console.log(ats);
 	if(ats.cx && ats.cy)
 		tip.stop().animate({
-			"80%" : ats,
-			"90%" : {fill: "#fbb"},
-			"100%" : {fill: "#f44",callback: function (){$(el).css({background:was});}}		
+			"80%"  : ats,
+			"90%"  : {fill: "#fbb"},
+			"100%" : {fill: "#f44"}		
 		}, 400);
 	setTimeout(scene, 450);
 	
