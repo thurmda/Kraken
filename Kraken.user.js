@@ -1,5 +1,8 @@
 // ==UserScript==
-// @name          The Kraken
+// @name        The Kraken
+// @author 		thurmda
+// @namespace 	http://danielthurman.com
+// @description	An experiment with jQuery and Raphael. Add this user script to Chrome or Firefox+Greasemonkey to install the Kraken. The key combo [cntrl]+[shift]+Z will summon the Kraken. Enter a jQuery selector and then.. The Kraken be smackin' your DOM 
 // ==/UserScript==
 
 //only run on top (no iframes, etc.)
