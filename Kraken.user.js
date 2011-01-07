@@ -75,8 +75,10 @@ $("<div id='K'><input id='KQ'/></div>").appendTo("body");
 var r = Raphael("K", viewport.width, viewport.height);
 	r.customAttributes.a1 = function (num) {return {a1: num};};
 	r.customAttributes.a2 = function (num) {return {a2: num};};
-	var arm = r.path().attr({fill: "75-#f33-#c88:80-#b99", stroke: "#f33", "stroke-width": 2});
-	var tip = r.ellipse(18, viewport.height - 18, 3, 4).attr({stroke: "#f33","stroke-width": 2, fill: "#f44"}).onAnimation(function () {
+	var arm = r.path().attr({fill: "75-#f33-#b99", stroke: "#f33", "stroke-width": 2});
+	var shadow = arm.clone().attr({"fill-opacity": .3, fill: "#544", "stroke-opacity": .33,  stroke: "#433", "stroke-width": 4}).toBack();
+	var tip = r.ellipse(18, viewport.height - 18, 3, 4).attr({stroke: "#f33","stroke-width": 2, fill: "#f44"})
+		.onAnimation(function () {
 	 	var c2y = viewport.height - ((viewport.height - this.attr("cy")) * .6); 
 	 	var c10y = viewport.height - 20; 
 	 	var curve ={path:  
@@ -91,7 +93,8 @@ var r = Raphael("K", viewport.width, viewport.height);
 				  (viewport.width/3 )+","+ viewport.height +
 			"L" + 0 +","+ viewport.height 
 			};	 	
-	 	arm.attr(curve).toBack()
+	 	arm.attr(curve).toBack();
+	 	shadow.attr(curve).toBack().translate(3, 6);
 	});
 
 //METHODS
