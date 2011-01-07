@@ -75,8 +75,8 @@ $("<div id='K'><input id='KQ'/></div>").appendTo("body");
 var r = Raphael("K", viewport.width, viewport.height);
 	r.customAttributes.a1 = function (num) {return {a1: num};};
 	r.customAttributes.a2 = function (num) {return {a2: num};};
-	var arm = r.path().attr({fill: "75-#f33-#b99", stroke: "#f33", "stroke-width": 2});
-	var shadow = arm.clone().attr({"fill-opacity": .3, fill: "#544", "stroke-opacity": .33,  stroke: "#433", "stroke-width": 4}).toBack();
+	var arm = r.path().attr({fill: "75-#f33-#c88:80-#b99", stroke: "#f33", "stroke-width": 2});
+	var shadow = arm.clone().attr({"fill-opacity": .3, fill: "#544", "stroke-opacity": .33,  stroke: "#433", "stroke-width": 2}).toBack();
 	var tip = r.ellipse(18, viewport.height - 18, 3, 4).attr({stroke: "#f33","stroke-width": 2, fill: "#f44"})
 		.onAnimation(function () {
 	 	var c2y = viewport.height - ((viewport.height - this.attr("cy")) * .6); 
@@ -149,6 +149,7 @@ var stingEl = function(){
 var scene=function(){
 	if (!active)
 			return;
+	//new props for the arm's spline anchors 
 	var a1 = Math.random() * (viewport.width -24)  + 12;
 	var a2 = (viewport.width * .6) + Math.random() * (viewport.width * .4);
 	var ease = easing[Math.floor(Math.random() *easing.length)];
@@ -160,6 +161,7 @@ var scene=function(){
 		toggleKraken();
 		return;
 	}
+	
 	//unsafeWindow.console.log(el);
 	var cx = $(el).offset().left + $(el).width()/2;
 	var cy = $(el).offset().top - $w.scrollTop() + $(el).height()/2;
