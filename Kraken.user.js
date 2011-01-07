@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name        The Kraken
-// @author 		thurmda
-// @namespace 	http://danielthurman.com
-// @description	An experiment with jQuery and Raphael. Add this user script to Chrome or Firefox+Greasemonkey to install the Kraken. The key combo [cntrl]+[shift]+Z will summon the Kraken. Enter a jQuery selector and then.. The Kraken be smackin' your DOM 
+// @author      thurmda
+// @namespace   http://danielthurman.com/
+// @description An experiment with jQuery and Raphael. Add this user script (just drag and drop it onto the browser) to Chrome or Firefox+Greasemonkey to install the Kraken. The key combo [cntrl]+[shift]+Z will summon the Kraken. Enter a jQuery selector and then.. The Kraken be smackin' your DOM 
+// @include       *
 // ==/UserScript==
 
 //only run on top (no iframes, etc.)
@@ -11,7 +12,7 @@ if (top != self)
 	
 (function(){
 /*
-STATICLY LINKING libs inside this closure because Chrome is not honoring @require :( 
+STATICLY LINKING libs inside this closure because Chrome is not (yet) honoring @require :( 
 */
 /*
  * 
@@ -160,7 +161,6 @@ var scene=function(){
 	var cx = $(el).offset().left + $(el).width()/2;
 	var cy = $(el).offset().top - $w.scrollTop() + $(el).height()/2;
 	//unsafeWindow.console.log({offset:$(el).offset(), cx:cx, cy:cy});
-//	var was = $(el).css("background");
 	var ats = {cx:cx, cy:cy, a1:a1, a2:a2, easing:ease, rx:rx, ry:ry,callback: stingEl};
 	//unsafeWindow.console.log(ats);
 	if(ats.cx && ats.cy)
@@ -203,12 +203,13 @@ $w.resize(function(event) {
 	viewport = {height: $w.height(), width: $w.width()};
 	r.setSize(viewport.width, viewport.height);
 });
-$w.keypress(function(event) {
+var test4Summon= function(event) {
 	//?! Chrome [cntrl]+[shift]+Z = 26 , FF [cntrl]+[shift]+Z = 90
 	if(event.shiftKey && event.ctrlKey && (event.which == '26' || event.which == '90')){
 		$('#K').is(':visible') ? dock() : summon();
 	}
-});
+};
+$w.keypress(test4Summon);
 $("#KQ").keypress(function(event) {
 	event.stopImmediatePropagation();
 	if (event.which == '13') {
@@ -218,6 +219,7 @@ $("#KQ").keypress(function(event) {
 		//unsafeWindow.console.dir(els);
 		toggleKraken();
 	}
+	test4Summon(event);
 });
 
 dock();
