@@ -6,4 +6,5 @@ browser instance. Then on ANY web page the key combo [cntrl]+[shift]+Z will
 summon the Kraken. Enter a jQuery selector into the input area, hit [enter], 
 and then... 
 
+![kraken](Kraken.png)
 The Kraken be smackin' your DOM.
